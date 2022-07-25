@@ -2,10 +2,10 @@ import * as React from 'react';
 
 export const Comments = () => {
   const [comments, setComments] = React.useState([
-    { id: 1, parentId: null, text: 'this is one' },
-    { id: 2, parentId: 1, text: 'this is two' },
-    { id: 3, parentId: 2, text: 'this is three' },
-    { id: 4, parentId: 2, text: 'this is four' },
+    { id: '1', parentId: null, text: 'this is one' },
+    { id: '2', parentId: '1', text: 'this is two' },
+    { id: '3', parentId: '2', text: 'this is three' },
+    { id: '4', parentId: '2', text: 'this is four' },
   ]);
 
   const [tree, setTree] = React.useState([]);
@@ -32,13 +32,12 @@ export const Comments = () => {
   }
 
   React.useEffect(() => {
-    const tr = createTree(comments);
-    console.log(tr);
-    setTree(tr);
+    setTree(createTree(comments));
   }, [comments]);
 
   const handleSubmit = (parentId, text) => {
-    console.log(parentId, text);
+    const id = new Date().getTime().toString(36);
+    setComments([...comments, { id, parentId, text }]);
   };
 
   // setComments();fdfgg
@@ -52,15 +51,13 @@ export const Comments = () => {
 };
 
 const Comment = ({ tree, handleSubmit }) => {
-  console.log(tree, 'tree');
   if (!tree || tree.length === 0) return null;
-  console.log(tree, 'tree2');
   return (
     <div>
       <ul>
         {tree.map((t) => (
           <li key={t.id}>
-            {t.text} <br />
+            {t.id}-{t.text} <br />
             <InputComponent parentId={t.id} handleSubmit={handleSubmit} />
             <Comment tree={t.children} handleSubmit={handleSubmit} />
           </li>
@@ -71,26 +68,19 @@ const Comment = ({ tree, handleSubmit }) => {
 };
 
 const InputComponent = ({ parentId, handleSubmit }) => {
-  const [newComment, setNewComment] = React.useState('new comment');
-  const handleChange = (e) => {
-    console.log(e.target);
-    setNewComment(e.target.value);
-  };
-  console.log(parentId, '78');
+  const [newComment, setNewComment] = React.useState('');
   return (
     <div>
       <input
         type="text"
-        // name="newComment"
         value={newComment}
-        onChange={handleChange}
+        onChange={(e) => setNewComment(e.target.value)}
       />
       <button
         type="button"
         onClick={() => {
-          // e.preventDefault();
           handleSubmit(parentId, newComment);
-          // setNewComment('');
+          setNewComment('');
         }}
       >
         Save
